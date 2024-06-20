@@ -17,10 +17,20 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 def inc_visitors(req: func.HttpRequest, documents: func.DocumentList, outputDocument: func.Out[func.Document]) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
+    if req.method == "OPTIONS":
+        # handle preflight CORS request
+        response = func.HttpResponse(status_code=200)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        return response
+    
+    # retrieve document
     document = documents[0]
     if not document:
         return func.HttpResponse("Document not found.", status_code=404)
 
+    # update count
     if "count" in document:
         document["count"] += 1
     else:
@@ -28,4 +38,10 @@ def inc_visitors(req: func.HttpRequest, documents: func.DocumentList, outputDocu
 
     outputDocument.set(document)
 
-    return func.HttpResponse(f"{document['count']}", status_code=200)
+    response = func.HttpResponse(f"{document['count']}", status_code=200)
+
+    # CORS headers
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Content-Type'] = 'application/json'
+
+    return response
