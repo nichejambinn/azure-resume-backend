@@ -46,3 +46,4 @@ resource "azurerm_cosmosdb_sql_container" "resumedb_cont" {
   partition_key_path  = "/counterId"
   throughput          = 400 # minimum default
 }
+
