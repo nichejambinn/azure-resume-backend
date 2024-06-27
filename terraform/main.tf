@@ -47,3 +47,35 @@ resource "azurerm_cosmosdb_sql_container" "resumedb_cont" {
   throughput          = 400 # minimum default
 }
 
+resource "azurerm_storage_account" "resumeazapp_sa" {
+  name                            = "resumeazappstrgacct"
+  resource_group_name             = azurerm_resource_group.backend_rg.name
+  location                        = azurerm_resource_group.backend_rg.location
+  account_tier                    = "Standard"
+  account_replication_type        = "LRS"
+  allow_nested_items_to_be_public = false
+}
+
+resource "azurerm_service_plan" "resumeazapp_asp" {
+  name                = "resumeazappasp"
+  resource_group_name = azurerm_resource_group.backend_rg.name
+  location            = azurerm_resource_group.backend_rg.location
+  os_type             = "Linux"
+  sku_name            = "Y1"
+}
+
+# resource "azurerm_linux_function_app" "resumeazapp_fnapp" {
+#     name = "resumeazapp-ensorcell"
+#     resource_group_name = azurerm_resource_group.backend_rg.name
+#     location = azurerm_resource_group.backend_rg.location
+
+#     storage_account_name = azurerm_storage_account.resumeazapp_sa
+#     storage_account_access_key = azurerm_storage_account.resumeazapp_sa.primary_access_key
+#     service_plan_id = azurerm_service_plan.resumeazapp_asp.id
+
+#     https_only = true
+
+#     site_config {
+
+#     }
+# }
