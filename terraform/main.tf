@@ -32,15 +32,15 @@ resource "azurerm_cosmosdb_account" "resumedb_acc" {
   }
 }
 
-resource "azure_cosmosdb_sql_database" "resumedb_db" {
+resource "azurerm_cosmosdb_sql_database" "resumedb_db" {
   name                = "ResumeDB"
   account_name        = azurerm_cosmosdb_account.cosmosdb_acc.name
   resource_group_name = azurerm_resource_group.backend_rg.name
 }
 
-resource "azure_cosmosdb_sql_container" "resumedb_cont" {
+resource "azurerm_cosmosdb_sql_container" "resumedb_cont" {
   name                = "PageTraffic"
-  database_name       = azure_cosmosdb_sql_database.resumedb_db.name
+  database_name       = azurerm_cosmosdb_sql_database.resumedb_db.name
   account_name        = azurerm_cosmosdb_account.resumedb_acc.name
   resource_group_name = azurerm_resource_group.backend_rg.name
   partition_key_path  = "/counterId"
