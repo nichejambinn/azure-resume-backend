@@ -34,7 +34,7 @@ resource "azurerm_cosmosdb_account" "resumedb_acc" {
 
 resource "azurerm_cosmosdb_sql_database" "resumedb_db" {
   name                = "ResumeDB"
-  account_name        = azurerm_cosmosdb_account.cosmosdb_acc.name
+  account_name        = azurerm_cosmosdb_account.resumedb_acc.name
   resource_group_name = azurerm_resource_group.backend_rg.name
 }
 
