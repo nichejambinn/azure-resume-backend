@@ -1,0 +1,53 @@
+name: Deploy backend
+run-name: ${{ github.actor }} is pushing changes to backend for deployment
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+    environment: dev
+
+    # use bash shell regardless of runner
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./terraform
+
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
+
+      - name: setup tf
+        uses: hashicorp/setup-terraform@v3
+
+      - name: tf fmt
+        run: terraform fmt -check
+
+      - name: tf init
+        run: | 
+          set -a
+          source ../.env.backend
+          terraform init \
+            -backend-config="resource_group_name=$TF_VAR_state_resource_group_name" \
+            -backend-config="storage_account_name=$TF_VAR_state_storage_account_name"
+
+      - name: tf validate
+        run: terraform validate
+
+      - name: tf plan
+        run: terraform plan -out tfplan
+
+      - name: tf apply
+        run: terraform apply -auto-approve tfplan
