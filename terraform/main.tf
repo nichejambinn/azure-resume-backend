@@ -30,6 +30,9 @@ resource "azurerm_cosmosdb_account" "resumedb_acc" {
     location          = azurerm_resource_group.backend_rg.location
     failover_priority = 0
   }
+  capabilities {
+    name = "EnableServerless"
+  }
 }
 
 resource "azurerm_cosmosdb_sql_database" "resumedb_db" {
